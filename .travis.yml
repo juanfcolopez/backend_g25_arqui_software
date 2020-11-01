@@ -16,7 +16,7 @@ install:
 
 script:
     - docker-compose up -d
-    - docker-compose exec app db:migrate
+    - docker-compose run app rails db:migrate
     - docker-compose exec app bundle exec rspec
     - zip -r latest *
     - mkdir -p dpl_cd_upload
