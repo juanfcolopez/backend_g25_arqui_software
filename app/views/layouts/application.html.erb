@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chate0</title>
+    <nav class="navbar navbar-dark bg-primary">
+    <a class="navbar-brand" href="/">Chate0</a>
+    <% if current_user %>
+    <button type="button" class="btn btn-light"><%= link_to "Log out", destroy_user_session_path, method: :delete%></button>
+    <% end %>
+  </nav>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>

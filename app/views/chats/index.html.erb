@@ -1,0 +1,21 @@
+<%= link_to 'New Chat', new_chat_path %>
+
+
+<div class="row">
+<div class="col-xs-6 col-centrada" style="width: 60vh; height:80vh; overflow-y: auto;">
+
+
+      <h1>Chat Rooms</h1>     
+    <% @chats.each do |chat| %>
+     
+      <div class="card-container">
+      <div class="card">
+        <div class="front">
+          <%= chat.title %>
+        </div>
+        <%= link_to 'JOIN', chat %>
+      </div>
+    </div>
+    <% end %>
+</div>
+</div>

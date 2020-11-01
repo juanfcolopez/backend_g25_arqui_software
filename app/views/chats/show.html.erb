@@ -1,0 +1,33 @@
+
+<h1>
+  <%= @chat.title %>
+</h1>
+
+<%= link_to 'Back', chats_path %>
+
+<div class="row">
+  <div class="col-x-6 col-centrada" style="width: 500px; height:70vh; overflow-y: auto;">
+
+
+    <% @messages.each do |msg| %>
+      <div class="msgbox">
+          <div class="msg-data">
+            <div class="msg-name"><%= msg.user.username %></div>
+            <div class="msg-time">[<%= msg.created_at %>] :</div>
+          </div>
+          <div class="msg-body">
+              <%= msg.body %>
+          </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="mx-auto" style=" width: 500px;">
+  <%= form_with model: [@chat, @message], local: true, html: { autocomplete: "off" } do |f| %>
+  <%= f.text_field :body, class: "client-request"%>
+  <%= f.submit "Send" %>
+</div>
+<% end %>
+
+
