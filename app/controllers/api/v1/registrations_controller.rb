@@ -4,6 +4,8 @@ module Api
       before_action :ensure_params_exist, only: :create
       skip_before_action :verify_authenticity_token, :only => :create
       # sign up
+      # POST api/v1/sign_up
+      # request body: user[email], user[password], user[username], user[password_confirmation]
       def create
         user = User.new user_params
         user.auth_token = generate_token
@@ -15,7 +17,7 @@ module Api
           }, status: :ok
         else
           render json: {
-            messages: "Sign Up Failded",
+            messages: "Sign Up Failed",
             is_success: false,
             data: {}
           }, status: :unprocessable_entity

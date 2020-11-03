@@ -5,6 +5,7 @@ module Api
       before_action :set_chat
       before_action :authenticate_and_load_user
 
+      # POST api/v1/chats/[chat_id]/messages
       def create
         @message = @chat.messages.new(message_params)
         @message.user = @current_user

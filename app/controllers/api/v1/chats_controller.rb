@@ -16,6 +16,9 @@ module Api
               }
             end
 
+            # POST api/v1/chats
+            # body de request: chat[title]
+
             def create
                 @chat = Chat.new(chat_params)
 
@@ -35,6 +38,8 @@ module Api
                     end
                 end
             end
+
+            # GET api/v1/chats/[chat_id]
 
             def show
                 @messages = @chat.messages

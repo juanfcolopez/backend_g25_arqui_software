@@ -6,6 +6,8 @@ module Api
       before_action :load_user, only: :create
       
       # sign in
+      # POST api/v1/sign_in
+      # request body: sign_id[email], sign_in[password]
       def create
         if @user.valid_password?(sign_in_params[:password])
           render json: {
