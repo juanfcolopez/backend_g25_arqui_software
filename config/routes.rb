@@ -7,9 +7,14 @@ Rails.application.routes.draw do
   # end
   namespace 'api' do
     namespace 'v1' do
+      get 'member-requests', to: 'members#index'
+      resources :members do
+        post 'validate', to: 'members#validate_request'
+      end
       resources :chats
       resources :chats do
           post 'messages', to: 'messages#create'
+          post 'associate', to: 'chats#associate'
       end
       devise_scope :user do
         post "sign_up", to: "registrations#create"
