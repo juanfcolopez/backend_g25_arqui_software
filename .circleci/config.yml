@@ -5,22 +5,14 @@ orbs:
 jobs:
   build:
     docker:
-      - image: 'cimg/ruby:2.7-node'
+      - image: circleci/ruby:2.6.3-stretch-node
+    executor: ruby/default
     steps:
       - checkout
-      - ruby/install-deps
-      - node/install-packages:
-          cache-key: yarn.lock
-          pkg-manager: yarn
-  checking:
-    docker:
-      - image: 'cimg/ruby:2.7-node'
-    steps:
-      - checkout
-      - ruby/install-deps
-      - ruby/rubocop-check:
-          format: progress
-          label: Inspecting with Rubocop
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - ruby/bundle-install
   test:
     docker:
       - image: 'cimg/ruby:2.7-node'
@@ -50,4 +42,4 @@ jobs:
           command: 'bundle exec rails db:schema:load --trace'
           name: Database setup
       - ruby/rspec-test
-      
+ 
