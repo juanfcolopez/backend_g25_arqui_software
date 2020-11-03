@@ -50,12 +50,4 @@ jobs:
           command: 'bundle exec rails db:schema:load --trace'
           name: Database setup
       - ruby/rspec-test
-
-workflows:
-  build_and_test:
-    jobs:
-      - build
-      - checking
-      - test:
-          requires:
-            - build
+      
