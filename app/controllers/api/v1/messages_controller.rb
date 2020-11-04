@@ -71,7 +71,7 @@ module Api
         if authentication_token
             @current_user = User.find_by(auth_token: authentication_token)
         end
-        return if @current_user.present?
+        return if @current_user.present? and !@current_user.blocked
         render json: {
             messages: "Can't authenticate user",
             is_success: false,

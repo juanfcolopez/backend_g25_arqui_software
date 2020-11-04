@@ -10,11 +10,19 @@ module Api
       # request body: sign_id[email], sign_in[password]
       def create
         if @user.valid_password?(sign_in_params[:password])
+          if !@user.blocked
           render json: {
             messages: "Signed In Successfully",
             is_success: true,
             data: {user: @user}
           }, status: :ok
+          else
+            render json: {
+              messages: "Signed In Failed - Blocked User",
+              is_success: false,
+              data: {}
+            }, status: :unauthorized
+          end
         else
           render json: {
             messages: "Signed In Failed - Unauthorized",

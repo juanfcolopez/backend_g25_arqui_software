@@ -29,6 +29,11 @@ Rails.application.routes.draw do
         get "manage_chats", to: "admins#index_chats"
         get "manage_chats/:id", to: "admins#show_chat"
         put "manage_chats/:id", to: "admins#update_chat"
+
+        # admin crud: manage messages
+        put "manage_messages/:id", to: "admins#censor_message"
+
+
       end
     end
   end

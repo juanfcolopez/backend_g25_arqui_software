@@ -3,7 +3,9 @@ module Api
     class AdminsController < ApplicationController
       protect_from_forgery with: :null_session
       before_action :authenticate_and_load_user
-      before_action :check_if_admin, only: [:index, :show, :update]
+      before_action :check_if_admin
+
+      ############## USER MANAGEMENT #################
     
       # GET api/v1/manage_users
       def index
@@ -56,6 +58,8 @@ module Api
         }
       end
 
+      ############## CHAT MANAGEMENT #################
+
       # GET api/v1/manage_chats/[chat_id]
       def show_chat
         @chat = Chat.find(params[:id])
@@ -87,41 +91,39 @@ module Api
         end
       end
 
-      ############## CRUD MENSAJES #################
+      ############## MESSAGE MANAGEMENT #################
 
       # PUT api/v1/manage_messages/[message_id]
 
-      # def censor_message
-      #   message_params = params.require(:message).permit(:body)
-      #   @message = Message.find(params[:id])
-      #   respond_to do |format|
-      #     if @message.update(censored: true)
-      #       @censored_message = Censoredmessage.new(user_id: @current_user.id, message_id: @message.id, body: message_params["body"])
-      #       if @censored_message.save
-      #         format.json { render json: {
-      #           messages: "Request Successfull!",
-      #           is_success: true,
-      #           data: { message: @message }
-      #         } }
-      #       else
-      #         format.json { render json: {
-      #           messages: "Bad Request!",
-      #           is_success: false,
-      #           data: { }
-      #         } }
-      #       end
-            
-      #     else
-      #       format.json { render json: {
-      #         messages: "Bad Request!",
-      #         is_success: false,
-      #         data: { }
-      #       } }
-      #     end
-      #   end
-      # end
+      def censor_message
+        message_params = params.require(:message).permit(:body)
+        @message = Message.find(params[:id])
+        respond_to do |format|
+          if @message.update(censored: true)
+            @censored_message = Censoredmessage.new(user_id: @current_user.id, message_id: @message.id, body: message_params["body"])
+            if @censored_message.save
+              format.json { render json: {
+                messages: "Request Successfull!",
+                is_success: true,
+                data: { message: @message, censored_message: @censored_message }
+              } }
+            else
+              format.json { render json: {
+                messages: "Message marked as censored but censored message not saved!",
+                is_success: false,
+                data: { }
+              } }
+            end
 
-
+          else
+            format.json { render json: {
+              messages: "Bad Request!",
+              is_success: false,
+              data: { }
+            } }
+          end
+        end
+      end
 
       private
       # Use callbacks to share common setup or constraints between actions.
@@ -134,7 +136,7 @@ module Api
         if authentication_token
             @current_user = User.find_by(auth_token: authentication_token)
         end
-        return if @current_user.present?
+        return if @current_user.present? and !@current_user.blocked
         render json: {
             messages: "Can't authenticate user",
             is_success: false,

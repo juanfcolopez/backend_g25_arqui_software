@@ -95,6 +95,9 @@ module Api
                     message_copy = message.attributes
                     username = User.find(message.user_id).username
                     message_copy[:username] = username
+                    if message.censored
+                        message_copy[:censored_message] = Censoredmessage.where(message_id: message.id).last
+                    end
                     messages_copy << message_copy
                 }
                 render json: {
@@ -160,7 +163,7 @@ module Api
             if authentication_token
                 @current_user = User.find_by(auth_token: authentication_token)
             end
-            return if @current_user.present?
+            return if @current_user.present? and !@current_user.blocked
             render json: {
                 messages: "Can't authenticate user",
                 is_success: false,
