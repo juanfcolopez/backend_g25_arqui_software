@@ -3,6 +3,7 @@ module Api
         class ChatsController < ApplicationController
             protect_from_forgery with: :null_session
             before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate]
+            before_action :check_if_open, only: [:show]
             before_action :authenticate_and_load_user
             before_action :authenticate_member, only: [:show]
           
@@ -37,13 +38,13 @@ module Api
             end
 
             def index
-              all_chats = Chat.all
+              all_chats = Chat.where(closed: false)
               chats_response = []
               permitted_requests = Member.where(user_id: @current_user.id, valid_flag: true)
               permitted_chat_rooms = []
               permitted_requests.each { |req|
                 permitted_chat_rooms << req.chat_id
-              }  
+              }
               chats = Chat.where(private: false).or(Chat.where(id: permitted_chat_rooms))
               all_chats.each { |chat|
                 chat_copy = chat.attributes
@@ -140,6 +141,15 @@ module Api
             # Only allow a list of trusted parameters through.
             def chat_params
             params.require(:chat).permit(:title, :private)
+            end
+
+            def check_if_open
+                return if @chat.closed
+                render json: {
+                    messages: "Chat is closed",
+                    is_success: false,
+                    data: {}
+                }, status: :bad_request
             end
 
             def authenticate_and_load_user

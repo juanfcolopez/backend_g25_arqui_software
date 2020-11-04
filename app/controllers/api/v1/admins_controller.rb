@@ -2,7 +2,6 @@ module Api
   module V1
     class AdminsController < ApplicationController
       protect_from_forgery with: :null_session
-      before_action :set_user, only: [:show, :edit, :update]
       before_action :authenticate_and_load_user
       before_action :check_if_admin, only: [:index, :show, :update]
     
@@ -18,6 +17,7 @@ module Api
 
       # GET api/v1/manage_users/[user_id]
       def show
+        @user = User.find(params[:id])
         render json: {
           messages: "Request Successfull!",
           is_success: true,
@@ -27,6 +27,8 @@ module Api
 
       # PUT api/v1/manage_users/[user_id]
       def update
+        user_params = params.require(:user).permit(:email, :username, :blocked)
+        @user = User.find(params[:id])
         respond_to do |format|
           if @user.update(user_params)
             format.json { render json: {
@@ -44,36 +46,51 @@ module Api
         end
       end
 
-      # PUT api/v1/manage_users/delete/[user_id]
-      # no funciona porque id de user es foreign key en tablas chats y messages
-      # def destroy
-      #   respond_to do |format|
-      #     if @user.update(blocked: true)
-      #       format.json { render json: {
-      #         messages: "Request Successfull!",
-      #         is_success: true,
-      #         data: { user: @user }
-      #       } }
-      #     else
-      #       format.json { render json: {
-      #         messages: "Bad Request!",
-      #         is_success: false,
-      #         data: { }
-      #       } }
-      #     end
-      #   end
-      # end
+      # GET api/v1/manage_users
+      def index_chats
+        @chats = Chat.all
+        render json: {
+          messages: "Request Successfull!",
+          is_success: true,
+          data: { chats: @chats }
+        }
+      end
+
+      # GET api/v1/manage_chats/[chat_id]
+      def show_chat
+        @chat = Chat.find(params[:id])
+        render json: {
+          messages: "Request Successfull!",
+          is_success: true,
+          data: { user: @chat }
+        }
+      end
+
+      # PUT api/v1/manage_chats/[chat_id]
+      def update_chat
+        chat_params = params.require(:chat).permit(:title, :private, :closed)
+        @chat = Chat.find(params[:id])
+        respond_to do |format|
+          if @chat.update(chat_params)
+            format.json { render json: {
+              messages: "Request Successfull!",
+              is_success: true,
+              data: { chat: @chat }
+            } }
+          else
+            format.json { render json: {
+              messages: "Bad Request!",
+              is_success: false,
+              data: { }
+            } }
+          end
+        end
+      end
+
+
 
       private
       # Use callbacks to share common setup or constraints between actions.
-      def set_user
-        @user = User.find(params[:id])
-      end
-  
-      # Only allow a list of trusted parameters through.
-      def user_params
-        params.require(:user).permit(:email, :username, :blocked)
-      end
 
       def authenticate_and_load_user
         authentication_token = nil

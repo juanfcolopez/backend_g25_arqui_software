@@ -3,6 +3,7 @@ module Api
     class MessagesController < ApplicationController
       protect_from_forgery with: :null_session
       before_action :set_chat
+      before_action :check_if_open, only: [:create]
       before_action :authenticate_and_load_user
       before_action :authenticate_member, only: [:create]
 
@@ -51,6 +52,15 @@ module Api
 
       def set_chat
         @chat = Chat.find(params[:chat_id])
+      end
+
+      def check_if_open
+        return if @chat.closed
+        render json: {
+          messages: "Chat is closed",
+          is_success: false,
+          data: {}
+        }, status: :bad_request
       end
 
       def authenticate_and_load_user

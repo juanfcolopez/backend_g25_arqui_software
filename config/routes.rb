@@ -19,10 +19,16 @@ Rails.application.routes.draw do
       devise_scope :user do
         post "sign_up", to: "registrations#create"
         post "sign_in", to: "sessions#create"
+
+        # admin crud: manage users
         get "manage_users", to: "admins#index"
         get "manage_users/:id", to: "admins#show"
         put "manage_users/:id", to: "admins#update"
 
+        # admin crud: manage chats
+        get "manage_chats", to: "admins#index_chats"
+        get "manage_chats/:id", to: "admins#show_chat"
+        put "manage_chats/:id", to: "admins#update_chat"
       end
     end
   end
