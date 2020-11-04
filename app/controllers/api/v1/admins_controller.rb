@@ -87,6 +87,40 @@ module Api
         end
       end
 
+      ############## CRUD MENSAJES #################
+
+      # PUT api/v1/manage_messages/[message_id]
+
+      # def censor_message
+      #   message_params = params.require(:message).permit(:body)
+      #   @message = Message.find(params[:id])
+      #   respond_to do |format|
+      #     if @message.update(censored: true)
+      #       @censored_message = Censoredmessage.new(user_id: @current_user.id, message_id: @message.id, body: message_params["body"])
+      #       if @censored_message.save
+      #         format.json { render json: {
+      #           messages: "Request Successfull!",
+      #           is_success: true,
+      #           data: { message: @message }
+      #         } }
+      #       else
+      #         format.json { render json: {
+      #           messages: "Bad Request!",
+      #           is_success: false,
+      #           data: { }
+      #         } }
+      #       end
+            
+      #     else
+      #       format.json { render json: {
+      #         messages: "Bad Request!",
+      #         is_success: false,
+      #         data: { }
+      #       } }
+      #     end
+      #   end
+      # end
+
 
 
       private

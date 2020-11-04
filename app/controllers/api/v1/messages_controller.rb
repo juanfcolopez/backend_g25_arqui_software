@@ -55,7 +55,7 @@ module Api
       end
 
       def check_if_open
-        return if @chat.closed
+        return if !@chat.closed
         render json: {
           messages: "Chat is closed",
           is_success: false,
