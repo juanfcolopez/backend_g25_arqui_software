@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_02_184645) do
+ActiveRecord::Schema.define(version: 2020_11_04_012836) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "censoredmessages", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "message_id"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_censoredmessages_on_message_id"
+    t.index ["user_id"], name: "index_censoredmessages_on_user_id"
+  end
 
   create_table "chats", force: :cascade do |t|
     t.string "title"
@@ -21,6 +31,7 @@ ActiveRecord::Schema.define(version: 2020_11_02_184645) do
     t.datetime "updated_at", null: false
     t.boolean "private", default: false
     t.bigint "user_id"
+    t.boolean "closed", default: false
     t.index ["user_id"], name: "index_chats_on_user_id"
   end
 
@@ -40,6 +51,7 @@ ActiveRecord::Schema.define(version: 2020_11_02_184645) do
     t.bigint "chat_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "censored", default: false
     t.index ["chat_id"], name: "index_messages_on_chat_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
@@ -54,12 +66,16 @@ ActiveRecord::Schema.define(version: 2020_11_02_184645) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "auth_token", default: ""
+    t.boolean "admin", default: false
+    t.boolean "blocked", default: false
     t.index ["auth_token"], name: "index_users_on_auth_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "censoredmessages", "messages"
+  add_foreign_key "censoredmessages", "users"
   add_foreign_key "chats", "users"
   add_foreign_key "members", "chats"
   add_foreign_key "members", "users"

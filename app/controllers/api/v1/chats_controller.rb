@@ -3,6 +3,7 @@ module Api
         class ChatsController < ApplicationController
             protect_from_forgery with: :null_session
             before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate]
+            before_action :check_if_open, only: [:show]
             before_action :authenticate_and_load_user
             before_action :authenticate_member, only: [:show]
           
@@ -37,13 +38,13 @@ module Api
             end
 
             def index
-              all_chats = Chat.all
+              all_chats = Chat.where(closed: false)
               chats_response = []
               permitted_requests = Member.where(user_id: @current_user.id, valid_flag: true)
               permitted_chat_rooms = []
               permitted_requests.each { |req|
                 permitted_chat_rooms << req.chat_id
-              }  
+              }
               chats = Chat.where(private: false).or(Chat.where(id: permitted_chat_rooms))
               all_chats.each { |chat|
                 chat_copy = chat.attributes
@@ -60,6 +61,9 @@ module Api
                   data: { chats: chats_response }
               }
             end
+
+            # POST api/v1/chats
+            # body de request: chat[title]
 
             def create
                 @chat = Chat.new(chat_params)
@@ -82,6 +86,8 @@ module Api
                 end
             end
 
+            # GET api/v1/chats/[chat_id]
+
             def show
                 @messages = @chat.messages
                 messages_copy = []
@@ -89,6 +95,9 @@ module Api
                     message_copy = message.attributes
                     username = User.find(message.user_id).username
                     message_copy[:username] = username
+                    if message.censored
+                        message_copy[:censored_message] = Censoredmessage.where(message_id: message.id).last
+                    end
                     messages_copy << message_copy
                 }
                 render json: {
@@ -137,6 +146,15 @@ module Api
             params.require(:chat).permit(:title, :private)
             end
 
+            def check_if_open
+                return if !@chat.closed
+                render json: {
+                    messages: "Chat is closed",
+                    is_success: false,
+                    data: {}
+                }, status: :bad_request
+            end
+
             def authenticate_and_load_user
             authentication_token = nil
             if request.headers["Authorization"]
@@ -145,7 +163,7 @@ module Api
             if authentication_token
                 @current_user = User.find_by(auth_token: authentication_token)
             end
-            return if @current_user.present?
+            return if @current_user.present? and !@current_user.blocked
             render json: {
                 messages: "Can't authenticate user",
                 is_success: false,
