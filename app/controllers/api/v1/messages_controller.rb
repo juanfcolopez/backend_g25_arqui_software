@@ -4,6 +4,7 @@ module Api
       protect_from_forgery with: :null_session
       before_action :set_chat
       before_action :authenticate_and_load_user
+      before_action :authenticate_member, only: [:create]
 
       def create
         @message = @chat.messages.new(message_params)
@@ -19,6 +20,29 @@ module Api
       end
 
       private
+      
+      def authenticate_member
+        permission = Member.where(chat_id: @chat.id, user_id: @current_user.id)
+        if !@chat[:private]
+            return true
+        elsif permission.length == 0
+            render json: {
+                messages: "You dont have the permissions to create a message in the chat",
+                is_success: false,
+                data: {}
+            }
+        elsif permission[0].valid_flag
+            return true
+        elsif @chat.user == @current_user
+            return true
+        else
+            render json: {
+                messages: "You dont have the permissions to create a message in the chat",
+                is_success: false,
+                data: {}
+            }
+        end
+      end    
 
       def message_params
         params.require(:message).permit(:body, :chat_id)
