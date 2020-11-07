@@ -67,7 +67,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        ruby-version: 2.5
+        ruby-version: [2.5]
         appname: ['g25-codedeploy']
         deploy-group: ['staging-g25']
         s3-bucket: ['g25-codedeploy-deployments']
