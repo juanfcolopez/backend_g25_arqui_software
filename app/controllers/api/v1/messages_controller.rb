@@ -69,14 +69,23 @@ module Api
             authentication_token = request.headers["Authorization"].split[1]
         end
         if authentication_token
-            @current_user = User.find_by(auth_token: authentication_token)
+            user = JWT.decode(authentication_token, nil, false, algorithms: 'RS256')
+            username = user[0]["nickname"]
+            email = user[0]["name"]
+            @current_user = User.find_by(email: email, username: username)
+            if !@current_user.present?
+                user = User.new(email: email, username: username, password: '000000', password_confirmation: '000000')
+                if user.save
+                    @current_user = user
+                end
+            end
         end
-        return if @current_user.present? and !@current_user.blocked
+        return if @current_user.present?
         render json: {
             messages: "Can't authenticate user",
             is_success: false,
             data: {}
-          }, status: :bad_request
+            }, status: :bad_request
       end
 
     end
