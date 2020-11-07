@@ -73,7 +73,7 @@ jobs:
         s3-bucket: ['g25-codedeploy-deployments']
         s3-filename: ['staging-aws-codedeploy-g25']
 
-    needs: buildAndTest
+    needs: test
     steps:
       - uses: actions/checkout@v2
 
