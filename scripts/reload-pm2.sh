@@ -1,4 +1,4 @@
 #!/bin/bash
 cd ~/aws-codedeploy
-touch entre
-pm2 startOrReload ecosystem.config.js
+sudo docker-compose up
+touch hicecompose
