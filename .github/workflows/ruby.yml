@@ -68,9 +68,9 @@ jobs:
       matrix:
         python-version: [3.8]
         ruby-version: [2.5]
-        appname: ['g25-codedeploy']
-        deploy-group: ['staging-g25']
-        s3-bucket: ['g25-codedeploy-deployments']
+        appname: ['g25small-codedeploy']
+        deploy-group: ['staging-g25small']
+        s3-bucket: ['g25small-codedeploy-deployments']
         s3-filename: ['staging-aws-codedeploy-g25']
 
     needs: test
