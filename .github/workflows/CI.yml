@@ -15,8 +15,10 @@
 name: CI/pull_request to development
 
 on:
-  pull_request:
+  push:
     branches: [ development ]
+  pull_request:
+    branches: [ main, development ]
 
 jobs:
   test:
