@@ -16,9 +16,7 @@ name: Ruby
 
 on:
   push:
-    branches: [ main, cdgithubactions ]
-  pull_request:
-    branches: [ main, development ]
+    branches: [ main ]
 
 jobs:
   test:
