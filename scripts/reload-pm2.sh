@@ -1,6 +1,5 @@
 #!/bin/bash
 cd ~/aws-codedeploy
-sudo docker-compose down
-sudo docker-compose build
-sudo docker-compose up 
-touch hicecompose
+sudo docker-compose -f /home/ubuntu/aws-codedeploy/docker-compose.yml down
+sudo docker-compose -f /home/ubuntu/aws-codedeploy/docker-compose.yml build
+sudo docker-compose -f /home/ubuntu/aws-codedeploy/docker-compose.yml up
