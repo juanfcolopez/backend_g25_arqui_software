@@ -1,4 +1,5 @@
 #!/bin/bash
+cp ~/local_env.yml ~/aws-codedeploy/config
 cd ~/aws-codedeploy
 sudo docker-compose -f /home/ubuntu/aws-codedeploy/docker-compose.yml down
 sudo docker-compose -f /home/ubuntu/aws-codedeploy/docker-compose.yml build
