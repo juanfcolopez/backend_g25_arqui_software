@@ -16,7 +16,7 @@ name: Ruby
 
 on:
   push:
-    branches: [ TestCD ]
+    branches: [ main ]
 
 jobs:
   test:
