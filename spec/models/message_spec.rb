@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Message, type: :model do
-    let(:user) { FactoryBot.create(:user) }
+    let(:usermsg) { FactoryBot.create(:user, auth_token: 'Token_test2') }
     let(:chat) { FactoryBot.create(:chat) }
     it 'belongs_to messages' do
       msg_user_association = Message.reflect_on_association(:user)
@@ -22,6 +22,6 @@ RSpec.describe Message, type: :model do
     end
 
     it 'has valid create message with all parameters ' do
-        expect(build(:message, user_id: user.id, chat_id: chat.id)).to be_valid
+        expect(build(:message, user_id: usermsg.id, chat_id: chat.id)).to be_valid
     end
 end
