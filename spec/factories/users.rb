@@ -5,6 +5,6 @@ FactoryBot.define do
         password { 'password123P' }
         password_confirmation { 'password123P' }
         username {'Juan'}
-
+        auth_token  {'Tokentest'}
     end
 end
