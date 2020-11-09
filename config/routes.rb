@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       resources :chats do
           post 'messages', to: 'messages#create'
           post 'associate', to: 'chats#associate'
+          put 'change_private', to: 'chats#change_private'
       end
       devise_scope :user do
         post "sign_up", to: "registrations#create"

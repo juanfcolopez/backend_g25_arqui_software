@@ -2,13 +2,37 @@ module Api
     module V1
         class ChatsController < ApplicationController
             protect_from_forgery with: :null_session
-            before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate]
+            before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate, :change_private]
             before_action :check_if_open, only: [:show]
             before_action :authenticate_and_load_user
+            before_action :check_if_owner, only: [:change_private]
             before_action :authenticate_member, only: [:show]
+
+            # PUT /chats/[chat_id]/change_private
+            # creador de sala cambia atributo private de sala
+
+            def change_private
+                chat_params = params.require(:chat).permit(:private)
+                respond_to do |format|
+                    if @chat.update(chat_params)
+                        format.json { render json: {
+                            messages: "Request Successfull!",
+                            is_success: true,
+                            data: { chat: @chat }
+                        } }
+                    else
+                        format.json { render json: {
+                            messages: "Bad Request!",
+                            is_success: false,
+                            data: { }
+                        } }
+                    end
+                end
+            end
           
-            # GET /chats
-            # GET /chats.json
+            # POST /chats/[chat_id]/associate
+            # pedir ser miembro de un chat privado
+
             def associate
                 your_requests = Member.where(user_id: @current_user.id)
                 your_request_ids = []
@@ -34,8 +58,9 @@ module Api
                         data: { }
                     }
                 end
-
             end
+
+            # GET /chats
 
             def index
               all_chats = Chat.where(closed: false)
@@ -150,6 +175,15 @@ module Api
                 return if !@chat.closed
                 render json: {
                     messages: "Chat is closed",
+                    is_success: false,
+                    data: {}
+                }, status: :bad_request
+            end
+
+            def check_if_owner
+                return if @chat.user_id == @current_user.id
+                render json: {
+                    messages: "User is not chat owner",
                     is_success: false,
                     data: {}
                 }, status: :bad_request
