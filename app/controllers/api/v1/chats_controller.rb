@@ -88,6 +88,7 @@ module Api
                   id: @current_user.id,
                   admin: @current_user.admin,
                   blocked: @current_user.blocked
+
               }
             end
 
