@@ -2,13 +2,37 @@ module Api
     module V1
         class ChatsController < ApplicationController
             protect_from_forgery with: :null_session
-            before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate]
+            before_action :set_chat, only: [:show, :edit, :update, :destroy, :associate, :change_private]
             before_action :check_if_open, only: [:show]
             before_action :authenticate_and_load_user
+            before_action :check_if_owner, only: [:change_private]
             before_action :authenticate_member, only: [:show]
+
+            # PUT /chats/[chat_id]/change_private
+            # creador de sala cambia atributo private de sala
+
+            def change_private
+                chat_params = params.require(:chat).permit(:private)
+                respond_to do |format|
+                    if @chat.update(chat_params)
+                        format.json { render json: {
+                            messages: "Request Successfull!",
+                            is_success: true,
+                            data: { chat: @chat }
+                        } }
+                    else
+                        format.json { render json: {
+                            messages: "Bad Request!",
+                            is_success: false,
+                            data: { }
+                        } }
+                    end
+                end
+            end
           
-            # GET /chats
-            # GET /chats.json
+            # POST /chats/[chat_id]/associate
+            # pedir ser miembro de un chat privado
+
             def associate
                 your_requests = Member.where(user_id: @current_user.id)
                 your_request_ids = []
@@ -34,8 +58,9 @@ module Api
                         data: { }
                     }
                 end
-
             end
+
+            # GET /chats
 
             def index
               all_chats = Chat.where(closed: false)
@@ -47,6 +72,7 @@ module Api
               }
               chats = Chat.where(private: false).or(Chat.where(id: permitted_chat_rooms))
               all_chats.each { |chat|
+                print("CHATS: #{chat.title}")
                 chat_copy = chat.attributes
                 if chats.include?(chat)
                     chat_copy[:permission] = true
@@ -155,21 +181,48 @@ module Api
                 }, status: :bad_request
             end
 
-            def authenticate_and_load_user
-            authentication_token = nil
-            if request.headers["Authorization"]
-                authentication_token = request.headers["Authorization"].split[1]
-            end
-            if authentication_token
-                @current_user = User.find_by(auth_token: authentication_token)
-            end
-            return if @current_user.present? and !@current_user.blocked
-            render json: {
-                messages: "Can't authenticate user",
-                is_success: false,
-                data: {}
+            def check_if_owner
+                return if @chat.user_id == @current_user.id
+                render json: {
+                    messages: "User is not chat owner",
+                    is_success: false,
+                    data: {}
                 }, status: :bad_request
             end
-          end          
+
+            def authenticate_and_load_user
+                authentication_token = nil
+                if request.headers["Authorization"]
+                    authentication_token = request.headers["Authorization"].split[1]
+                end
+                if authentication_token
+                    user = JWT.decode(authentication_token, nil, false, algorithms: 'RS256')
+                    username = user[0]["nickname"]
+                    email = user[0]["name"]
+                    
+                    if user[0]['sub'].include? 'google-oauth2'
+                        email = username + '@gmail.com'
+                    end
+                    
+                    @current_user = User.find_by(email: email, username: username)
+                    if !@current_user.present?
+                        user = User.new(email: email, username: username, password: '000000', password_confirmation: '000000', auth_token: authentication_token)
+                        if user.save
+                            @current_user = user
+                            puts("Llegue al SAVEEE!!")
+                            puts("CURRENT USER PRESENT #{@current_user.present?}")
+                
+                        end
+                    end
+                end
+                return if @current_user.present?
+                render json: {
+                    messages: "Can't authenticate user",
+                    is_success: false,
+                    data: {}
+                    }, status: :bad_request
+                
+            end
+        end          
     end
 end
