@@ -3,8 +3,9 @@ module Api
     class AdminsController < ApplicationController
       protect_from_forgery with: :null_session
       before_action :authenticate_and_load_user
-      before_action :check_if_admin
+      before_action :check_if_admin, except: [:show_chat, :update_chat]
 
+      
       ############## USER MANAGEMENT #################
     
       # GET api/v1/manage_users
