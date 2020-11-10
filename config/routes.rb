@@ -18,8 +18,8 @@ Rails.application.routes.draw do
           put 'change_private', to: 'chats#change_private'
       end
       devise_scope :user do
-        post "sign_up", to: "registrations#create"
-        post "sign_in", to: "sessions#create"
+        # post "sign_up", to: "registrations#create"
+        # post "sign_in", to: "sessions#create"
 
         # admin crud: manage users
         get "manage_users", to: "admins#index"
