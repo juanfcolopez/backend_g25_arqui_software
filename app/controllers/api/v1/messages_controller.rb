@@ -72,9 +72,14 @@ module Api
             user = JWT.decode(authentication_token, nil, false, algorithms: 'RS256')
             username = user[0]["nickname"]
             email = user[0]["name"]
+
+            if user[0]['sub'].include? 'google-oauth2'
+              email = username + '@gmail.com'
+            end
+            
             @current_user = User.find_by(email: email, username: username)
             if !@current_user.present?
-                user = User.new(email: email, username: username, password: '000000', password_confirmation: '000000')
+                user = User.new(email: email, username: username, password: '000000', password_confirmation: '000000', auth_token: authentication_token)
                 if user.save
                     @current_user = user
                 end
