@@ -84,7 +84,9 @@ module Api
               render json: {
                   messages: "Request Successfull!",
                   is_success: true,
-                  data: { chats: chats_response }
+                  data: { chats: chats_response },
+                  id: current_user.id,
+                  admin: current_user.admin
               }
             end
 
