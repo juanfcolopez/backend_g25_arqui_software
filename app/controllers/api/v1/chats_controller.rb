@@ -85,8 +85,10 @@ module Api
                   messages: "Request Successfull!",
                   is_success: true,
                   data: { chats: chats_response },
-                  id: current_user.id,
-                  admin: current_user.admin
+                  id: @current_user.id,
+                  admin: @current_user.admin,
+                  blocked: @current_user.blocked
+
               }
             end
 
